@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="model.sql.board">
+
+	<select id = "boardlist" parameterType = "int" resultType = "board">
+			      	SELECT	B.BOARD_NUMM, B.BOARD_TITLE, B.BOARD_CONTENT, B.BOARD_DATE, B.USER_ID, COUNT(C.COMMENT_NUM) AS COMMENT_COUNT
+		FROM 	BOARD B
+		LEFT JOIN BOARD_COMMENT C ON (B.BOARD_NUMM=C.BOARD_NUMM)
+		GROUP BY B.BOARD_NUMM, B.BOARD_TITLE, B.BOARD_CONTENT, B.BOARD_DATE, B.USER_ID
+		ORDER BY BOARD_DATE DESC
+	</select>
+
+	
+
+		
+	<select id = "board" parameterType = "int" resultType = "board">
+		SELECT	BOARD_NUMM, BOARD_TITLE, BOARD_CONTENT, BOARD_DATE, USER_ID
+		FROM 	BOARD
+		WHERE	BOARD_NUMM = #{one_board}
+	</select>
+	
+	
+	
+	<insert id ="boardinsert" parameterType = "board" >
+		INSERT 
+		INTO BOARD
+		VALUES ((SELECT MAX(BOARD_NUMM)+1 FROM BOARD),
+				#{board_title},
+				#{board_content},
+				SYSDATE,
+				#{user_id}
+				)
+	</insert>
+	
+	<update id ="boardupdate" parameterType = "board" >
+		UPDATE BOARD
+		SET BOARD_TITLE = #{board_title},  
+			BOARD_CONTENT= #{board_content}, 
+			BOARD_DATE = SYSDATE
+		WHERE BOARD_NUMM = #{board_numm}
+	</update>
+	
+	
+	
+	<delete id ="boarddelete" parameterType = "int" >
+		DELETE FROM BOARD		
+		WHERE BOARD_NUMM = #{board_numm}
+	</delete>
+	
+	
+	
+	<select id = "boardCommentlist" parameterType = "int" resultType = "comment">
+		SELECT	COMMENT_NUM, COMMENT_CONTENT, BOARD_NUMM, COMMENT_WRITER, COMMENT_DATE
+		FROM 	BOARD_COMMENT
+		WHERE	BOARD_NUMM = #{board_numm}
+		ORDER BY COMMENT_DATE
+	</select>
+
+
+
+
+	<insert id ="boardCommentinsert" parameterType = "comment" >
+		INSERT 
+		INTO BOARD_COMMENT
+		(COMMENT_NUM, COMMENT_CONTENT, BOARD_NUMM, COMMENT_WRITER, COMMENT_DATE)
+		VALUES 
+				(
+				(SELECT MAX(COMMENT_NUM)+1 FROM BOARD_COMMENT),				
+				#{comment_content},
+				#{board_numm},
+				#{comment_writer},
+				DEFAULT
+				)
+	</insert>
+	
+	
+	
+		
+	<delete id ="boardCommentdelete"  parameterType = "int" >
+		DELETE FROM BOARD_COMMENT		
+		WHERE COMMENT_NUM = #{comment}
+	</delete>
+		
+	
+	
+	
+
+
+</mapper>

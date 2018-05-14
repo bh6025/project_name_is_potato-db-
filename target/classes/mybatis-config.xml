@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type ="com.potato.myapp.asset.model.vo.CarVO" 			alias="car" />
+		<typeAlias type ="com.potato.myapp.asset.model.vo.ElectricVO" 		alias="electric" />
+		<typeAlias type ="com.potato.myapp.asset.model.vo.TravelVO" 			alias="travel" />	
+					
+		<typeAlias type ="com.potato.myapp.board.model.vo.BoardVO" 			alias="board" />
+		<typeAlias type ="com.potato.myapp.board.model.vo.BoardCommentVO" 	alias="comment" />	
+			
+		<typeAlias type ="com.potato.myapp.money.model.vo.DetailVO" 				alias="detail" />
+		<typeAlias type ="com.potato.myapp.money.model.vo.UserMoneyVO" 			alias="money" />
+		<typeAlias type ="com.potato.myapp.money.model.vo.UserTotalDepositVO" 	alias="deposit" />
+		
+		<typeAlias type ="com.potato.myapp.user.model.vo.UserVO" 			alias="user" />
+	</typeAliases>
+</configuration>
+

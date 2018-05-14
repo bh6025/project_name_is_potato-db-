@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="model.sql.user">
+	<select id="loginUser" parameterType="user" resultType="user">
+		SELECT
+		USER_ID, USER_PWD, USER_EMAIL, USER_NAME, USER_DEPT, USER_JOB,
+		USER_AGE, USER_IMG
+		FROM USERS
+		WHERE USER_ID = #{user_id} AND USER_PWD =
+		#{user_pwd}
+	</select>
+
+	<insert id="joinUser" parameterType="user">
+		INSERT
+		INTO USERS
+		VALUES(
+		#{user_id},
+		#{user_pwd},
+		#{user_email},
+		#{user_name},
+		#{user_dept},
+		#{user_job},
+		#{user_age},
+		#{user_img} )
+	</insert>
+
+	<delete id="deleteUser" parameterType="user">
+		DELETE
+		FROM USERS
+		WHERE
+		USER_ID = #{user_id}
+	</delete>
+
+	<update id="modifyUser" parameterType="user">
+		UPDATE USERS
+		<set>
+			<if test="user_name != ''">
+				USER_NAME = #{user_name},
+			</if>
+			<if test="user_pwd != ''">
+				USER_PWD = #{user_pwd},
+			</if>
+			<if test="user_email != ''">
+				USER_EMAIL = #{user_email},
+			</if>
+			<if test="user_dept != ''">
+				USER_DEPT = #{user_dept},
+			</if>
+			<if test="user_job != ''">
+				USER_JOB = #{user_job},
+			</if>
+			<if test="user_age != ''">
+				USER_AGE = #{user_age},
+			</if>
+			<if test="user_img != null">
+				USER_IMG = #{user_img}
+			</if>
+		</set>
+		WHERE USER_ID = #{user_id}
+	</update>
+	
+	<select id="modifyLoginUser" parameterType="user" resultType="user">
+		SELECT
+				USER_ID, USER_PWD, USER_EMAIL, USER_NAME, USER_DEPT, USER_JOB,
+				USER_AGE, USER_IMG
+		FROM 	USERS
+		WHERE 	USER_ID = #{user_id}
+	</select>
+	
+	<update id="password" parameterType="user" >
+	UPDATE USERS
+	SET USER_PWD = #{user_pwd}
+	WHERE USER_EMAIL = #{user_email}
+	
+	</update>
+
+	<select id="name" parameterType="user" resultType="user">
+		SELECT	USER_ID
+		FROM 	USERS
+		WHERE 	USER_EMAIL = #{user_email}
+	</select>
+
+</mapper>

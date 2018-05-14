@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="model.sql.money">
+
+	<!-- simple -->
+	<insert id="insertUserMoney" parameterType="money">
+		INSERT INTO
+		USER_MONEY
+		VALUES
+		( #{user_id}, #{income}, #{expense}, #{deposit},
+		#{goal_deposit} )
+	</insert>
+
+	<select id="checkUserMoney" parameterType="user" resultType="money">
+		SELECT USER_ID, INCOME, EXPENSE, DEPOSIT, GOAL_DEPOSIT
+		FROM USER_MONEY
+		WHERE USER_ID=#{user_id}
+	</select>
+
+
+	<update id="updateUserMoney" parameterType="money">
+		UPDATE USER_MONEY
+		SET INCOME=#{income},
+		EXPENSE=#{expense},
+		DEPOSIT=#{deposit}
+		WHERE USER_ID=#{user_id}
+	</update>
+
+
+	<insert id="insertTotalDeposit" parameterType="money">
+		INSERT INTO
+		USER_TOTAL_DEPOSIT
+		VALUES
+		( #{user_id},default, #{deposit} )
+	</insert>
+
+
+	<select id="selectSameAgeRangeDeposit" parameterType="money"
+		resultType="money">
+		SELECT USER_AGE, AVG(DEPOSIT) AS DEPOSIT
+		FROM USERS
+		JOIN USER_MONEY USING (USER_ID)
+		GROUP BY USER_AGE
+		HAVING USER_AGE = (SELECT USER_AGE FROM USERS WHERE USER_ID = #{user_id})
+	</select>
+
+
+	<select id="findCar" parameterType="money" resultType="car">
+		SELECT	CAR_NAME, CAR_PRICE, CAR_IMG
+		FROM	CAR
+		WHERE	CAR_PRICE = ( SELECT MAX(CAR_PRICE)
+							FROM CAR
+							WHERE CAR_PRICE &lt; ( SELECT DEPOSIT*36 AS DEPOSIT
+													FROM USER_MONEY
+													WHERE USER_ID =#{user_id}))
+	</select>
+
+	<select id="findElectric" parameterType="money" resultType="electric">
+		SELECT ELECTRIC_NAME, ELECTRIC_PRICE, ELECTRIC_IMG
+		FROM ELECTRIC
+		WHERE ELECTRIC_PRICE = ( SELECT MAX(ELECTRIC_PRICE)
+		FROM ELECTRIC
+		WHERE ELECTRIC_PRICE &lt; ( SELECT DEPOSIT*36 AS DEPOSIT
+		FROM USER_MONEY
+		WHERE USER_ID =#{user_id}))
+	</select>
+
+	<select id="findTravel" parameterType="money" resultType="travel">
+		SELECT TRAVEL_NAME, TRAVEL_PRICE, TRAVEL_IMG
+		FROM TRAVEL
+		WHERE TRAVEL_PRICE = ( SELECT MAX(TRAVEL_PRICE)
+		FROM TRAVEL
+		WHERE TRAVEL_PRICE &lt; ( SELECT DEPOSIT*36 AS DEPOSIT
+		FROM USER_MONEY
+		WHERE USER_ID =#{user_id}))
+	</select>
+
+
+
+	<select id="findCar5Year" parameterType="money" resultType="car">
+		SELECT CAR_NAME, CAR_PRICE, CAR_IMG
+		FROM CAR
+		WHERE CAR_PRICE = ( SELECT MAX(CAR_PRICE)
+		FROM CAR
+		WHERE CAR_PRICE &lt; ( SELECT DEPOSIT*60 AS DEPOSIT
+		FROM USER_MONEY
+		WHERE USER_ID =#{user_id}))
+	</select>
+
+	<select id="findElectric5Year" parameterType="money" resultType="electric">
+		SELECT ELECTRIC_NAME, ELECTRIC_PRICE, ELECTRIC_IMG
+		FROM ELECTRIC
+		WHERE ELECTRIC_PRICE = ( SELECT MAX(ELECTRIC_PRICE)
+		FROM ELECTRIC
+		WHERE ELECTRIC_PRICE &lt; ( SELECT DEPOSIT*60 AS DEPOSIT
+		FROM USER_MONEY
+		WHERE USER_ID =#{user_id}))
+	</select>
+
+	<select id="findTravel5Year" parameterType="money" resultType="travel">
+		SELECT TRAVEL_NAME, TRAVEL_PRICE, TRAVEL_IMG
+		FROM TRAVEL
+		WHERE TRAVEL_PRICE = ( SELECT MAX(TRAVEL_PRICE)
+		FROM TRAVEL
+		WHERE TRAVEL_PRICE &lt; ( SELECT DEPOSIT*60 AS DEPOSIT
+		FROM USER_MONEY
+		WHERE USER_ID =#{user_id}))
+	</select>
+
+
+	<select id="findCar10Year" parameterType="money" resultType="car">
+		SELECT CAR_NAME, CAR_PRICE, CAR_IMG
+		FROM CAR
+		WHERE CAR_PRICE = ( SELECT MAX(CAR_PRICE)
+		FROM CAR
+		WHERE CAR_PRICE &lt; ( SELECT DEPOSIT*120 AS DEPOSIT
+		FROM USER_MONEY
+		WHERE USER_ID =#{user_id}))
+	</select>
+
+	<select id="findElectric10Year" parameterType="money"
+		resultType="electric">
+		SELECT ELECTRIC_NAME, ELECTRIC_PRICE, ELECTRIC_IMG
+		FROM ELECTRIC
+		WHERE ELECTRIC_PRICE = ( SELECT MAX(ELECTRIC_PRICE)
+		FROM ELECTRIC
+		WHERE ELECTRIC_PRICE &lt; ( SELECT DEPOSIT*120 AS DEPOSIT
+		FROM USER_MONEY
+		WHERE USER_ID =#{user_id}))
+	</select>
+
+	<select id="findTravel10Year" parameterType="money" resultType="travel">
+		SELECT TRAVEL_NAME, TRAVEL_PRICE, TRAVEL_IMG
+		FROM TRAVEL
+		WHERE TRAVEL_PRICE = ( SELECT MAX(TRAVEL_PRICE)
+		FROM TRAVEL
+		WHERE TRAVEL_PRICE &lt; ( SELECT DEPOSIT*120 AS DEPOSIT
+		FROM USER_MONEY
+		WHERE USER_ID =#{user_id}))
+	</select>
+	
+	
+
+	<!-- detail -->
+	<insert id="detailInsert" parameterType="detail">
+		INSERT INTO DETAIL
+		VALUES( #{user_id},
+		DEFAULT,
+		#{food_expense},
+		#{transportation_expense},
+		#{living_expense},
+		#{culture_expense},
+		#{phone_expense},
+		#{service_expense},
+		#{etc_expense} )
+	</insert>
+
+	<select id="selectPieChart" parameterType="user" resultType="detail">
+		SELECT USER_ID, USER_DATE, FOOD_EXPENSE, TRANSPORTATION_EXPENSE,
+		LIVING_EXPENSE, CULTURE_EXPENSE, PHONE_EXPENSE,
+		SERVICE_EXPENSE,
+		ETC_EXPENSE
+		FROM DETAIL
+		WHERE USER_ID = #{user_id}
+		AND USER_DATE =
+		(SELECT MAX(USER_DATE) FROM DETAIL WHERE USER_ID = #{user_id})
+	</select>
+
+	<select id="selectRadarChart_UserData" parameterType="user"
+		resultType="detail">
+		SELECT USER_ID, MAX(USER_DATE) AS USER_DATE,
+		AVG(FOOD_EXPENSE) AS FOOD_EXPENSE,
+		AVG(TRANSPORTATION_EXPENSE) AS
+		TRANSPORTATION_EXPENSE, AVG(LIVING_EXPENSE) AS LIVING_EXPENSE,
+		AVG(CULTURE_EXPENSE) AS CULTURE_EXPENSE, AVG(PHONE_EXPENSE) AS
+		PHONE_EXPENSE,
+		AVG(SERVICE_EXPENSE) AS SERVICE_EXPENSE,
+		AVG(ETC_EXPENSE) AS ETC_EXPENSE
+		FROM DETAIL
+		GROUP
+		BY USER_ID
+		HAVING
+		USER_ID = #{user_id}
+	</select>
+
+	<select id="selectRadarChart_SameAgeData" parameterType="user"
+		resultType="detail">
+		SELECT AVG(FOOD_EXPENSE) AS FOOD_EXPENSE,
+		AVG(TRANSPORTATION_EXPENSE) AS TRANSPORTATION_EXPENSE,
+		AVG(LIVING_EXPENSE) AS LIVING_EXPENSE,
+		AVG(CULTURE_EXPENSE) AS
+		CULTURE_EXPENSE, AVG(PHONE_EXPENSE) AS PHONE_EXPENSE,
+		AVG(SERVICE_EXPENSE) AS SERVICE_EXPENSE, AVG(ETC_EXPENSE) AS
+		ETC_EXPENSE
+		FROM DETAIL
+		JOIN USERS USING (USER_ID)
+		GROUP BY USER_AGE
+		HAVING USER_AGE = (SELECT USER_AGE FROM USERS WHERE USER_ID =
+		#{user_id})
+	</select>
+
+	<select id="detailCheck" resultType="Integer">
+		SELECT NVL(COUNT(USER_DATE),
+		0) AS USER_DATE
+		FROM DETAIL
+		WHERE USER_ID = #{user_id}
+	</select>
+
+
+	<!-- mine -->
+	<!-- totalExpense -->
+	<select id="chart_myDate" parameterType="user" resultType="detail">
+		SELECT *
+		FROM (SELECT *
+		FROM DETAIL
+		WHERE USER_ID = #{user_id}
+		ORDER BY USER_DATE DESC)
+		WHERE ROWNUM BETWEEN 1 AND 6
+		ORDER BY ROWNUM DESC
+	</select>
+
+	<select id="chart_sameAgeDate" parameterType="user" resultType="detail">
+		SELECT ROUND(AVG(FOOD_EXPENSE), 0) AS FOOD_EXPENSE,
+		ROUND(AVG(TRANSPORTATION_EXPENSE), 0) AS TRANSPORTATION_EXPENSE,
+		ROUND(AVG(LIVING_EXPENSE), 0) AS LIVING_EXPENSE,
+		ROUND(AVG(CULTURE_EXPENSE), 0) AS CULTURE_EXPENSE,
+		ROUND(AVG(PHONE_EXPENSE), 0) AS PHONE_EXPENSE,
+		ROUND(AVG(SERVICE_EXPENSE), 0) AS SERVICE_EXPENSE,
+		ROUND(AVG(ETC_EXPENSE), 0) AS ETC_EXPENSE
+		FROM DETAIL
+		JOIN USERS USING
+		(USER_ID)
+		WHERE USER_AGE = (SELECT DISTINCT USER_AGE
+		FROM DETAIL
+		JOIN USERS USING (USER_ID)
+		WHERE USER_ID = #{user_id})
+	</select>
+
+
+	<select id="listAllCar" resultType="car">
+		SELECT CAR_NUM, CAR_PRICE,
+		CAR_NAME, CAR_IMG
+		FROM CAR
+		ORDER BY CAR_PRICE
+	</select>
+
+	<select id="listAllElectric" resultType="electric">
+		SELECT ELECTRIC_NUM,
+		ELECTRIC_PRICE, ELECTRIC_NAME, ELECTRIC_IMG
+		FROM ELECTRIC
+		ORDER BY
+		ELECTRIC_PRICE
+	</select>
+
+	<select id="listAllTravel" resultType="travel">
+		SELECT TRAVEL_NUM,
+		TRAVEL_PRICE, TRAVEL_NAME, TRAVEL_IMG
+		FROM TRAVEL
+		ORDER BY TRAVEL_PRICE
+	</select>
+	
+	<update id="updateUserTotalDeposit" parameterType="user">
+		UPDATE	USER_TOTAL_DEPOSIT
+		SET		TOTAL_DEPOSIT = ( TOTAL_DEPOSIT + 	(SELECT	DEPOSIT
+													FROM	USER_MONEY
+													WHERE	USER_ID = #{user_id} ) 
+													*
+													(SELECT	CASE 
+																WHEN MONTHS_BETWEEN(SYSDATE, DEPOSIT_DATE) = '0'
+																THEN MONTHS_BETWEEN(SYSDATE, SYSDATE-1) - MONTHS_BETWEEN(DEPOSIT_DATE, SYSDATE-1)
+																ELSE MONTHS_BETWEEN(SYSDATE, DEPOSIT_DATE)
+															END 
+													FROM	USER_TOTAL_DEPOSIT
+													WHERE	USER_ID = #{user_id} )
+								)
+		,		DEPOSIT_DATE = SYSDATE
+		WHERE 	USER_ID = #{user_id}
+	
+	</update>
+	
+	<select id="selectDeposit" parameterType="user" resultType="deposit">
+		SELECT 	USER_ID, DEPOSIT_DATE, TOTAL_DEPOSIT
+		FROM	USER_TOTAL_DEPOSIT
+		WHERE	USER_ID = #{user_id}
+		
+	</select>
+	
+	<update id="updateAddTotalDeposit" parameterType="deposit">
+		UPDATE USER_TOTAL_DEPOSIT
+		SET TOTAL_DEPOSIT = TOTAL_DEPOSIT + #{total_deposit}
+		WHERE USER_ID = #{user_id}
+		
+	</update>
+</mapper>  
+
+
